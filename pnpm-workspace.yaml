@@ -2,3 +2,4 @@ onlyBuiltDependencies:
   - esbuild
   - exifreader
   - msgpackr-extract
+  - sharp
