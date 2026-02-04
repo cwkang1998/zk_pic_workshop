@@ -10,10 +10,7 @@
     "exif:write": "tsx scripts/add_exif.ts",
     "prove": "tsx scripts/generate_proof.ts",
     "verify": "tsx scripts/verify_proof.ts",
-    "test:scripts": "tsx scripts/tests.ts",
-    "resize:proof": "tsx scripts/resize_proof.ts",
-    "verify:resize": "tsx scripts/verify_resize.ts",
-    "resize:proof:invalid": "tsx scripts/resize_proof_invalid.ts"
+    "test:scripts": "tsx scripts/tests.ts"
   },
   "keywords": [],
   "author": "",
