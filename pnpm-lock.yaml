@@ -17,6 +17,9 @@ importers:
       exifreader:
         specifier: ^4.36.1
         version: 4.36.1
+      exiftool-vendored:
+        specifier: ^35.6.0
+        version: 35.6.0
     devDependencies:
       '@types/node':
         specifier: ^25.2.0
@@ -232,8 +235,14 @@ packages:
   '@noir-lang/types@1.0.0-beta.15':
     resolution: {integrity: sha512-FCydHArW6+oOSCxSIsprOExDaBMmxh0a9+ZhXigxFDZF6j96wzy3WvA0XLgczZzAjWOiBPCr4voTW1bsM0Ca2A==}
 
+  '@photostructure/tz-lookup@11.4.0':
+    resolution: {integrity: sha512-yrFaDbQQZVJIzpCTnoghWO8Rttu22Hg7/JkfP3CM8UKniXYzD80cuv4UAsFkzP5Z6XWceWNsQTqUJHKyGNXzLg==}
+
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
+
+  '@types/luxon@3.7.1':
+    resolution: {integrity: sha512-H3iskjFIAn5SlJU7OuxUmTEpebK6TKB8rxZShDslBMZJ5u9S//KM1sbdAisiSrqwLQncVjnpi2OK2J51h+4lsg==}
 
   '@types/node@25.2.0':
     resolution: {integrity: sha512-DZ8VwRFUNzuqJ5khrvwMXHmvPe+zGayJhr2CDNiKB1WBE1ST8Djl00D0IC4vvNmHMdj6DlbYRIaFE7WHjlDl5w==}
@@ -245,6 +254,10 @@ packages:
   atomic-sleep@1.0.0:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
+
+  batch-cluster@17.1.0:
+    resolution: {integrity: sha512-hLo0+9mlZEvoLdiqffTehuMvUnIBpngt4ORpoYoE77qN/98ay3NnpZqGgmPUMw+x/U/Jz6PUfeDhG+nZ6Ak3CA==}
+    engines: {node: '>=20'}
 
   comlink@4.4.2:
     resolution: {integrity: sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==}
@@ -265,6 +278,19 @@ packages:
   exifreader@4.36.1:
     resolution: {integrity: sha512-LrQP+ad6g/9wLtw6pJyD7qTOKUECQxNcy9M3f8UhcOH4rZReuQhpWoOaG6lIGmzSJxwF2k+tH2atZoPuY6x7RQ==}
 
+  exiftool-vendored.exe@13.48.0:
+    resolution: {integrity: sha512-VQcj81jf+v2ssPxlwPN7BYTe14yKKtm81Voj16bFwKxpmoRyi9uQF/fDGg31QlJWI6NNmveFQticyb1BwLmR2w==}
+    os: [win32]
+
+  exiftool-vendored.pl@13.48.0:
+    resolution: {integrity: sha512-jURdOBrvRABGll6aUyxXHTtliB1KhPUX3ptCvNz3JUeAknTvX3aISdqhPX+CkdAI/lzRHwPFG1mlmrT7+yP11A==}
+    os: ['!win32']
+    hasBin: true
+
+  exiftool-vendored@35.6.0:
+    resolution: {integrity: sha512-KkfpkkuwN+mk3Cg4ASyGXYHMuZEX0VB3R0d9i3Y/pxWh5lrPCDFwfz7iXCKltznNwZZeIiLi8/GY08842g3fOw==}
+    engines: {node: '>=20.0.0'}
+
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -273,8 +299,16 @@ packages:
   get-tsconfig@4.13.1:
     resolution: {integrity: sha512-EoY1N2xCn44xU6750Sx7OjOIT59FkmstNc3X6y5xpz7D5cBtZRe/3pSlTkDJgqsOk3WwZPkWfonhhUJfttQo3w==}
 
+  he@1.2.0:
+    resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
+    hasBin: true
+
   idb-keyval@6.2.2:
     resolution: {integrity: sha512-yjD9nARJ/jb1g+CvD0tlhUHOrJ9Sy0P8T9MF3YaLlHnSRpwPfpTX0XIvpmw3gAJUmEu3FiICLBDPXVwyEvrleg==}
+
+  luxon@3.7.2:
+    resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
+    engines: {node: '>=12'}
 
   msgpackr-extract@3.0.3:
     resolution: {integrity: sha512-P0efT1C9jIdVRefqjzOQ9Xml57zpOXnIuS+csaB4MdZbTdmGDLo8XhzBG1N7aO11gKDDkJvBLULeFTo46wwreA==}
@@ -470,7 +504,11 @@ snapshots:
 
   '@noir-lang/types@1.0.0-beta.15': {}
 
+  '@photostructure/tz-lookup@11.4.0': {}
+
   '@pinojs/redact@0.4.0': {}
+
+  '@types/luxon@3.7.1': {}
 
   '@types/node@25.2.0':
     dependencies:
@@ -480,6 +518,8 @@ snapshots:
     optional: true
 
   atomic-sleep@1.0.0: {}
+
+  batch-cluster@17.1.0: {}
 
   comlink@4.4.2: {}
 
@@ -521,6 +561,23 @@ snapshots:
     optionalDependencies:
       '@xmldom/xmldom': 0.9.8
 
+  exiftool-vendored.exe@13.48.0:
+    optional: true
+
+  exiftool-vendored.pl@13.48.0:
+    optional: true
+
+  exiftool-vendored@35.6.0:
+    dependencies:
+      '@photostructure/tz-lookup': 11.4.0
+      '@types/luxon': 3.7.1
+      batch-cluster: 17.1.0
+      he: 1.2.0
+      luxon: 3.7.2
+    optionalDependencies:
+      exiftool-vendored.exe: 13.48.0
+      exiftool-vendored.pl: 13.48.0
+
   fsevents@2.3.3:
     optional: true
 
@@ -528,7 +585,11 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
+  he@1.2.0: {}
+
   idb-keyval@6.2.2: {}
+
+  luxon@3.7.2: {}
 
   msgpackr-extract@3.0.3:
     dependencies:

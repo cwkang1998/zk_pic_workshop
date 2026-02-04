@@ -20,7 +20,7 @@
     "@aztec/bb.js": "3.0.0-nightly.20251104",
     "@noir-lang/noir_js": "1.0.0-beta.15",
     "exifreader": "^4.36.1",
-    "exiftool-vendored": "^28.6.0"
+    "exiftool-vendored": "^35.6.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.0",

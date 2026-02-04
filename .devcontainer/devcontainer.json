@@ -3,10 +3,6 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "features": {
-    "ghcr.io/aztecprotocol/devcontainer-features/noir:1": {},
-    "ghcr.io/aztecprotocol/devcontainer-features/barretenberg:1": {}
-  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -15,6 +11,5 @@
       ]
     }
   },
-  "postCreateCommand": "corepack enable && pnpm install && curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install | bash && curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/master/barretenberg/cpp/installation/install | bash && ~/.noirup/bin/noirup --version 1.0.0-beta.18 && ~/.noirup/bin/noirup --version && ~/.bbup/bin/bbup && ~/.bbup/bin/bb --version",
-  "remoteUser": "node"
+  "postCreateCommand": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@10.22.0 --activate && pnpm install"
 }
