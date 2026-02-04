@@ -1,0 +1,15 @@
+{
+  "name": "zk_pic_workshop",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "noir-lang.vscode-noir",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "postCreateCommand": "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack enable && corepack prepare pnpm@10.22.0 --activate && pnpm install"
+}

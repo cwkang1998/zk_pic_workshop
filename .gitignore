@@ -1,0 +1,13 @@
+.DS_Store
+
+node_modules
+
+target/**
+
+# Ignore the generated images
+imgs/bread_*.jpg
+
+# Ignore the proof generated
+proof_resize.json
+
+proof.json
