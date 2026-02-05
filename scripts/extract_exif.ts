@@ -8,12 +8,13 @@ if (!imagePath) {
 }
 
 const run = async () => {
-  const { tagNames, tagIds, tagCount } = await extractExifTags(imagePath);
+  const { tagNames, tagIds, tagValueHashes, tagCount } = await extractExifTags(imagePath);
   const payload = {
     imagePath,
     tagCount,
     tagNames,
     tagIds,
+    tagValueHashes: tagValueHashes.map((v) => v.toString()),
   };
   console.log(JSON.stringify(payload, null, 2));
 };

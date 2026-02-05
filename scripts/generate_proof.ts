@@ -2,19 +2,21 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Noir } from "@noir-lang/noir_js";
 import { UltraHonkBackend } from "@aztec/bb.js";
-import { COMMIT_BASE, MAX_TAGS } from "./constants";
+
 import {
-  commitTagIds,
+  commitTagPairs,
   extractExifTags,
-  hashTagName,
   padTagIds,
+  padFieldValues,
   toHex,
 } from "./utils";
 
-const [,, imagePath, queryTag, outPathArg] = process.argv;
+const MAX_TAGS = 32;
 
-if (!imagePath || !queryTag) {
-  console.error("Usage: pnpm prove <imagePath> <queryTagName> [proof.json]");
+const [,, imagePath, outPathArg] = process.argv;
+
+if (!imagePath) {
+  console.error("Usage: pnpm prove <imagePath> [proof.json]");
   process.exit(1);
 }
 
@@ -28,24 +30,21 @@ const run = async () => {
     throw new Error("Missing circuit bytecode. Did you run `nargo compile`?");
   }
 
-  const { tagNames, tagIds, tagCount } = await extractExifTags(imagePath);
+  const { tagNames, tagIds, tagValueHashes, tagCount } = await extractExifTags(imagePath);
   if (tagCount === 0) {
     throw new Error("No EXIF tags found in this image.");
   }
 
-  const queryId = hashTagName(queryTag);
-  if (!tagIds.includes(queryId)) {
-    throw new Error(`Tag '${queryTag}' not found in EXIF tags.`);
-  }
-
   const trimmedTagIds = tagIds.slice(0, tagCount);
   const paddedTagIds = padTagIds(trimmedTagIds, MAX_TAGS);
-  const commitment = commitTagIds(paddedTagIds, tagCount);
+  const trimmedTagValueHashes = tagValueHashes.slice(0, tagCount);
+  const paddedTagValueHashes = padFieldValues(trimmedTagValueHashes, MAX_TAGS);
+  const commitment = await commitTagPairs(paddedTagIds, paddedTagValueHashes, tagCount);
 
   const inputs = {
     tag_ids: paddedTagIds,
+    tag_value_hashes: paddedTagValueHashes.map((v) => v.toString()),
     tag_count: tagCount,
-    query_tag: queryId,
     commitment: commitment.toString(),
   };
 
@@ -62,8 +61,7 @@ const run = async () => {
     inputs,
     meta: {
       imagePath,
-      queryTag,
-      commitBase: COMMIT_BASE.toString(),
+      commitmentHash: "poseidon2",
       maxTags: MAX_TAGS,
       extractedTagCount: tagCount,
       extractedTagNames: tagNames,

@@ -36,7 +36,7 @@ const run = async () => {
   await copyFile(inPath, outPath);
 
   const tags = parseTags(tagArgs);
-  await exiftool.write(outPath, tags, ["-overwrite_original"]);
+  await exiftool.write(outPath, tags, {writeArgs: ["-overwrite_original"]});
   await exiftool.end();
 
   console.log(`Wrote EXIF tags to ${outPath}`);
@@ -46,8 +46,9 @@ run().catch(async (err) => {
   console.error(err);
   try {
     await exiftool.end();
-  } catch {
+  } catch (e) {
     // ignore
+    console.error(e)
   }
   process.exit(1);
 });

@@ -4,13 +4,14 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Noir } from "@noir-lang/noir_js";
 import { UltraHonkBackend, UltraHonkVerifierBackend } from "@aztec/bb.js";
-import { MAX_TAGS } from "./constants";
 import {
-  commitTagIds,
+  commitTagPairs,
   extractExifTags,
-  hashTagName,
   padTagIds,
+  padFieldValues,
 } from "./utils";
+
+const MAX_TAGS = 32;
 
 const findImage = (): string => {
   const files = readdirSync(process.cwd());
@@ -34,20 +35,17 @@ const run = async () => {
   const circuit = JSON.parse(readFileSync(circuitPath, "utf8"));
   assert(circuit.bytecode, "Missing circuit bytecode after compile");
 
-  const { tagNames, tagIds, tagCount } = await extractExifTags(imagePath);
+  const { tagIds, tagValueHashes, tagCount } = await extractExifTags(imagePath);
   assert(tagCount > 0, "Expected EXIF tags to be present");
 
-  const queryTag = tagNames[0];
-  const queryId = hashTagName(queryTag);
-  assert(tagIds.includes(queryId), "Query tag hash not found in tag list");
-
   const paddedTagIds = padTagIds(tagIds.slice(0, tagCount), MAX_TAGS);
-  const commitment = commitTagIds(paddedTagIds, tagCount);
+  const paddedTagValueHashes = padFieldValues(tagValueHashes.slice(0, tagCount), MAX_TAGS);
+  const commitment = await commitTagPairs(paddedTagIds, paddedTagValueHashes, tagCount);
 
   const inputs = {
     tag_ids: paddedTagIds,
+    tag_value_hashes: paddedTagValueHashes.map((v) => v.toString()),
     tag_count: tagCount,
-    query_tag: queryId,
     commitment: commitment.toString(),
   };
   console.log(inputs)

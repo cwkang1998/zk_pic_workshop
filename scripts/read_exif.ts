@@ -1,6 +1,5 @@
-import { readFile } from "node:fs/promises";
 import path from "node:path";
-import ExifReader from "exifreader";
+import { exiftool } from "exiftool-vendored";
 
 const [,, imagePath] = process.argv;
 
@@ -11,12 +10,13 @@ if (!imagePath) {
 
 const run = async () => {
   const absPath = path.resolve(imagePath);
-  const buffer = await readFile(absPath);
-  const tags = ExifReader.load(buffer);
+  const tags = await exiftool.read(absPath, {readArgs: ["-G1", "-a", "-s"]});
+  await exiftool.end();
   console.log(JSON.stringify(tags, null, 2));
 };
 
 run().catch((err) => {
   console.error(err);
+  exiftool.end().catch(() => {});
   process.exit(1);
 });

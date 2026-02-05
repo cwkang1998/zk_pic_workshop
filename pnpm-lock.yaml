@@ -14,9 +14,6 @@ importers:
       '@noir-lang/noir_js':
         specifier: 1.0.0-beta.15
         version: 1.0.0-beta.15
-      exifreader:
-        specifier: ^4.36.1
-        version: 4.36.1
       exiftool-vendored:
         specifier: ^35.6.0
         version: 35.6.0
@@ -390,10 +387,6 @@ packages:
   '@types/node@25.2.0':
     resolution: {integrity: sha512-DZ8VwRFUNzuqJ5khrvwMXHmvPe+zGayJhr2CDNiKB1WBE1ST8Djl00D0IC4vvNmHMdj6DlbYRIaFE7WHjlDl5w==}
 
-  '@xmldom/xmldom@0.9.8':
-    resolution: {integrity: sha512-p96FSY54r+WJ50FIOsCOjyj/wavs8921hG5+kVMmZgKcvIKxMXHTrjNJvRgWa/zuX3B6t2lijLNFaOyuxUH+2A==}
-    engines: {node: '>=14.6'}
-
   atomic-sleep@1.0.0:
     resolution: {integrity: sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==}
     engines: {node: '>=8.0.0'}
@@ -417,9 +410,6 @@ packages:
     resolution: {integrity: sha512-HyNQImnsOC7X9PMNaCIeAm4ISCQXs5a5YasTXVliKv4uuBo1dKrG0A+uQS8M5eXjVMnLg3WgXaKvprHlFJQffw==}
     engines: {node: '>=18'}
     hasBin: true
-
-  exifreader@4.36.1:
-    resolution: {integrity: sha512-LrQP+ad6g/9wLtw6pJyD7qTOKUECQxNcy9M3f8UhcOH4rZReuQhpWoOaG6lIGmzSJxwF2k+tH2atZoPuY6x7RQ==}
 
   exiftool-vendored.exe@13.48.0:
     resolution: {integrity: sha512-VQcj81jf+v2ssPxlwPN7BYTe14yKKtm81Voj16bFwKxpmoRyi9uQF/fDGg31QlJWI6NNmveFQticyb1BwLmR2w==}
@@ -767,9 +757,6 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@xmldom/xmldom@0.9.8':
-    optional: true
-
   atomic-sleep@1.0.0: {}
 
   batch-cluster@17.1.0: {}
@@ -808,10 +795,6 @@ snapshots:
       '@esbuild/win32-arm64': 0.27.2
       '@esbuild/win32-ia32': 0.27.2
       '@esbuild/win32-x64': 0.27.2
-
-  exifreader@4.36.1:
-    optionalDependencies:
-      '@xmldom/xmldom': 0.9.8
 
   exiftool-vendored.exe@13.48.0:
     optional: true
