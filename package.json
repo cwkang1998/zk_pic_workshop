@@ -5,12 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "exif": "tsx scripts/extract_exif.ts",
-    "exif:read": "tsx scripts/read_exif.ts",
-    "exif:write": "tsx scripts/add_exif.ts",
+    "exif:read": "tsx scripts/extract_exif.ts",
     "prove": "tsx scripts/generate_proof.ts",
-    "verify": "tsx scripts/verify_proof.ts",
-    "test:scripts": "tsx scripts/tests.ts"
+    "verify": "tsx scripts/verify_proof.ts"
   },
   "keywords": [],
   "author": "",

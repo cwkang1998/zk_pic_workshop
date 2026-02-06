@@ -9,6 +9,7 @@ import {
   padTagIds,
   padFieldValues,
   toHex,
+  writeProofToExif,
 } from "./utils";
 
 const MAX_TAGS = 32;
@@ -35,13 +36,15 @@ const run = async () => {
     throw new Error("No EXIF tags found in this image.");
   }
 
+  const secret = 13579024680n;
   const trimmedTagIds = tagIds.slice(0, tagCount);
   const paddedTagIds = padTagIds(trimmedTagIds, MAX_TAGS);
   const trimmedTagValueHashes = tagValueHashes.slice(0, tagCount);
   const paddedTagValueHashes = padFieldValues(trimmedTagValueHashes, MAX_TAGS);
-  const commitment = await commitTagPairs(paddedTagIds, paddedTagValueHashes, tagCount);
+  const commitment = await commitTagPairs(paddedTagIds, paddedTagValueHashes, tagCount, secret);
 
   const inputs = {
+    secret: secret.toString(),
     tag_ids: paddedTagIds,
     tag_value_hashes: paddedTagValueHashes.map((v) => v.toString()),
     tag_count: tagCount,
@@ -58,7 +61,6 @@ const run = async () => {
   await backend.destroy();
 
   const payload = {
-    inputs,
     meta: {
       imagePath,
       commitmentHash: "poseidon2",
@@ -74,6 +76,7 @@ const run = async () => {
   };
 
   await writeFile(outPath, JSON.stringify(payload, null, 2));
+  await writeProofToExif(imagePath, payload, "XMP-dc:Description");
   console.log(`Proof written to ${outPath}`);
 };
 

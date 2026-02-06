@@ -1,36 +1,40 @@
 import { BN254_FR_MODULUS, BarretenbergSync } from "@aztec/bb.js";
 import path from "node:path";
-import { createHash } from "node:crypto";
 import { exiftool } from "exiftool-vendored";
-import { COMMIT_BASE, MAX_TAGS } from "./constants";
+
+const MAX_TAGS = 32;
+
+let exiftoolEnded = false;
+const ensureExiftoolShutdown = () => {
+  if (exiftoolEnded) return;
+  exiftoolEnded = true;
+  exiftool.end().catch(() => {});
+};
+
+if (typeof process !== "undefined" && process?.on) {
+  process.on("beforeExit", ensureExiftoolShutdown);
+  process.on("SIGINT", () => {
+    ensureExiftoolShutdown();
+    process.exit(1);
+  });
+  process.on("SIGTERM", () => {
+    ensureExiftoolShutdown();
+    process.exit(1);
+  });
+}
 
 export type ExifExtraction = {
   tagNames: string[];
-  tagIds: number[];
+  tagIds: string[];
+  tagValues: any[];
   tagValueHashes: bigint[];
   tagCount: number;
 };
 
-export function hashTagName(name: string): number {
-  // FNV-1a 32-bit
-  let hash = 0x811c9dc5;
-  for (const byte of new TextEncoder().encode(name)) {
-    hash ^= byte;
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return hash >>> 0;
-}
-
-export function commitTagIds(tagIds: number[], tagCount: number): bigint {
-  if (tagCount > tagIds.length) {
-    throw new Error(`tagCount ${tagCount} exceeds tagIds length ${tagIds.length}`);
-  }
-
-  let acc = 0n;
-  for (let i = 0; i < tagCount; i += 1) {
-    acc = (acc * COMMIT_BASE + BigInt(tagIds[i])) % BN254_FR_MODULUS;
-  }
-  return acc;
+async function hashTagName(name: string): Promise<string> {
+  const encoded = new TextEncoder().encode(name);
+  const hashed = await hashBytesToField(encoded);
+  return hashed.toString();
 }
 
 let poseidonApi: BarretenbergSync | null = null;
@@ -67,16 +71,31 @@ const poseidon2Hash = async (a: bigint, b: bigint): Promise<bigint> => {
   return bytesToBigIntBE(res.hash);
 };
 
+const poseidon1Hash = async (a: bigint): Promise<bigint> => {
+  const api = await getPoseidon();
+  const res = api.poseidon2Hash({ inputs: [toFieldBytes(a)] });
+  return bytesToBigIntBE(res.hash);
+};
+
+const hashBytesToField = async (bytes: Uint8Array): Promise<bigint> => {
+  let acc = 0n;
+  for (const byte of bytes) {
+    acc = await poseidon2Hash(acc, BigInt(byte));
+  }
+  return acc;
+};
+
 export async function commitTagPairs(
-  tagIds: number[],
+  tagIds: string[],
   tagValueHashes: bigint[],
-  tagCount: number
+  tagCount: number,
+  secret: bigint
 ): Promise<bigint> {
   if (tagCount > tagIds.length || tagCount > tagValueHashes.length) {
     throw new Error("tagCount exceeds tag_ids or tag_value_hashes length");
   }
 
-  let acc = 0n;
+  let acc = await poseidon1Hash(secret);
   for (let i = 0; i < tagCount; i += 1) {
     acc = await poseidon2Hash(acc, BigInt(tagIds[i]));
     acc = await poseidon2Hash(acc, tagValueHashes[i]);
@@ -84,11 +103,11 @@ export async function commitTagPairs(
   return acc;
 }
 
-export function padTagIds(tagIds: number[], maxTags = MAX_TAGS): number[] {
+export function padTagIds(tagIds: string[], maxTags = MAX_TAGS): string[] {
   if (tagIds.length > maxTags) {
     return tagIds.slice(0, maxTags);
   }
-  return [...tagIds, ...Array(maxTags - tagIds.length).fill(0)];
+  return [...tagIds, ...Array(maxTags - tagIds.length).fill("0")];
 }
 
 export function padFieldValues(values: bigint[], maxTags = MAX_TAGS): bigint[] {
@@ -114,24 +133,18 @@ const normalizeValue = (value: unknown): unknown => {
   return String(value);
 };
 
-export const hashValueToField = (value: unknown): bigint => {
+export const hashValueToField = async (value: unknown): Promise<bigint> => {
   const normalized = normalizeValue(value);
   const encoded = new TextEncoder().encode(JSON.stringify(normalized));
-  const digest = createHash("sha256").update(encoded).digest("hex");
-  return BigInt(`0x${digest}`) % BN254_FR_MODULUS;
+  return hashBytesToField(encoded);
 };
 
 export async function extractExifTags(imagePath: string): Promise<ExifExtraction> {
   const absolutePath = path.resolve(imagePath);
-  let parsed: Record<string, unknown> | undefined;
-  try {
-    parsed = await exiftool.read(absolutePath, { readArgs: ["-G1", "-a", "-s"] });
-  } finally {
-    await exiftool.end();
-  }
+  const parsed = await exiftool.read(absolutePath, { readArgs: ["-G1", "-a", "-s"] }) as Record<string, unknown>;
 
   if (!parsed || typeof parsed !== "object") {
-    return { tagNames: [], tagIds: [], tagValueHashes: [], tagCount: 0 };
+    return { tagNames: [], tagIds: [], tagValues: [], tagValueHashes: [], tagCount: 0 };
   }
 
   const entries = Object.entries(parsed)
@@ -144,12 +157,28 @@ export async function extractExifTags(imagePath: string): Promise<ExifExtraction
     .sort(([a], [b]) => a.localeCompare(b));
 
   const tagNames = entries.map(([name]) => name);
-  const tagIds = tagNames.map(hashTagName);
-  const tagValueHashes = entries.map(([, value]) => hashValueToField(value));
+  const tagIds = await Promise.all(tagNames.map(hashTagName));
+  const tagValues = entries.map(([, value]) => value)
+  const tagValueHashes = await Promise.all(tagValues.map((value) => hashValueToField(value)));
   const tagCount = Math.min(tagIds.length, MAX_TAGS);
 
-  return { tagNames, tagIds, tagValueHashes, tagCount };
+  return { tagNames, tagIds, tagValues, tagValueHashes, tagCount };
 }
+
+export async function writeProofToExif(
+  imagePath: string,
+  payload: unknown,
+  tagName = "XMP-dc:Description"
+): Promise<void> {
+  const absolutePath = path.resolve(imagePath);
+  const value = JSON.stringify(payload);
+  await exiftool.write(
+    absolutePath,
+    { [tagName]: value },
+    { writeArgs: ["-overwrite_original"] }
+  );
+}
+
 
 export function toHex(bytes: Uint8Array): string {
   return Array.from(bytes)

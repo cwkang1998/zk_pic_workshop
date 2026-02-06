@@ -9,3 +9,5 @@ imgs/bread_*.jpg
 
 # Ignore the proof generated
 proof_resize.json
+
+proof.json
